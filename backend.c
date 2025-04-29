@@ -19,38 +19,33 @@ enum commands
 int main(void)
 {
     int command;
-    while (1)
+
+    printf("What do you want to do?\n");
+    commandList();
+    scanf("%d", &command);
+
+    switch ((enum commands)command) // Calls the given command.
     {
-        printf("What do you want to do?\n");
-        commandList();
-        scanf("%d", &command);
-
-        if (scanf("%d", &command) != 1) // Checks if the input is valid - if it's an integer or not.
-        {
-            printf("Invalid input. Try again.\n");
-
-            switch ((enum commands)command) // Calls the given command.
-            {
-            case INPUT:
-                input();
-                break;
-            case MATH:
-                math();
-                break;
-            case RESET:
-                reset();
-                break;
-            case HELP:
-                help();
-                break;
-            default:
-                printf("WRONG SYNTAX\n");
-                break;
-            }
-        }
-
-        return 0;
+    case INPUT:
+        input();
+        break;
+    case MATH:
+        math();
+        break;
+    case RESET:
+        reset();
+        break;
+    case HELP:
+        help();
+        break;
+    default:
+        printf("Invalid input. Try again.\n");
+        main();
+        command = 5;
+        break;
     }
+
+    return 0;
 }
 void commandList()
 {
