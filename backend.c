@@ -11,6 +11,7 @@ void action();
 void read();
 void back();
 void mathOperationList();
+void equationCalc();
 
 int main()
 {
@@ -43,34 +44,41 @@ void action(float **cell, int gridSize)
 
     printf("What do you want to do?\n");
     commandList();
-    scanf("%d", &command);
-
-    switch ((enum commands)command) // Calls the given command.
+    if (scanf("%1d", &command) == 1)
     {
-    case INPUT:
-        input(cell, gridSize);
-        break;
-    case MATH:
-        math(cell, gridSize);
-        break;
-    case READ:
-        read(cell, gridSize);
-        break;
-    case RESET:
-        reset(cell, gridSize);
-        break;
-    case HELP:
-        help();
-        break;
-    case EXIT:
-        printf("exiting...\n");
-        exit(0);
-
-    default:
+        switch ((enum commands)command) // Calls the given command.
+        {
+        case INPUT:
+            input(cell, gridSize);
+            break;
+        case MATH:
+            math(cell, gridSize);
+            break;
+        case READ:
+            read(cell, gridSize);
+            break;
+        case RESET:
+            reset(cell, gridSize);
+            break;
+        case HELP:
+            help();
+            break;
+        case EXIT:
+            printf("exiting...\n");
+            exit(0);
+    
+        default:
+            printf("Invalid input. Try again.\n");
+            action(cell, gridSize);
+        }
+    } 
+    else
+    {
         printf("Invalid input. Try again.\n");
         action(cell, gridSize);
     }
 }
+
 void commandList()
 {
     printf("Commands:\n");
@@ -108,11 +116,12 @@ void math()
         MULTIPLY,
         DIVIDE,
         SUM,
+        EQUATION,
         BACK
     };
 
     int row, col, operation;
-    float newValue;
+    char equation[100];
 
     printf("row:\n");
     scanf("%d", &row);
@@ -122,16 +131,26 @@ void math()
     switch ((enum mathOperations)operation)
     {
     case ADD:
+        printf("ADD Is working\n");
         break;
     case SUBTRACT:
+        printf("SUB Is working\n");
         break;
     case MULTIPLY:
+        printf("MULT Is working\n");
         break;
     case DIVIDE:
+        printf("DIVIDE Is working\n");
         break;
     case SUM:
+        printf("SUM Is working\n");
+        break;
+    case EQUATION:
+        printf("EQ Is working\n");
+        equationCalc(equation);
         break;
     case BACK:
+        printf("Back has run\n");
         break;
     default:
         printf("Invalid input. Try again.\n");
@@ -147,10 +166,24 @@ void mathOperationList(int *operation)
     printf("2: MULTIPLY\n");
     printf("3: DIVIDE\n");
     printf("4: SUM\n");
-    printf("5: BACK\n");
-    scanf("%p", &operation);
+    printf("5: EQUATION\n");
+    printf("6: BACK\n");
+    if (scanf("%1p", &*operation) == 1)
+    {
+        return;
+    } 
+    else 
+    {
+        printf("Invalid input. Try again.\n");
+        mathOperationList(&operation);
+    }
 }
-
+void equationCalc(char equation[100])
+{
+    printf("Write equation:\n");
+    scanf("%99s", equation);
+    printf("Equation: %s\n", equation);
+}
 void read(float **cell, int gridSize)
 {
     int row, col;
