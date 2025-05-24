@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 void initialize();
@@ -20,11 +21,11 @@ struct Token {
     int type;
 };
 
-void initialize(int ROW, int COL, struct CellProperties (*cell)[COL])
+void initialize(int row, int col, struct CellProperties (*cell)[col])
 {
-    for (int i = 0; i < ROW; i++) // Initializes all CellProperties.
+    for (int i = 0; i < row; i++) // Initializes all CellProperties.
     {
-        for (int j = 0; j < COL; j++)
+        for (int j = 0; j < col; j++)
         {
             cell[i][j].defined = 0;
             cell[i][j].value = 0;
@@ -34,101 +35,111 @@ void initialize(int ROW, int COL, struct CellProperties (*cell)[COL])
 
 int main ()
 {
-    int ROW = 10, COL = 10; // Sets the grid size.
-    int thisROW, thisCOL;
+    int row = 10, col = 10; // Sets the grid size.
+    int selectedRow, selectedCol;
 
-    struct CellProperties cell[ROW][COL];
+    struct CellProperties cell[row][col];
 
-    initialize(ROW, COL, cell); // Makes sure the every cell is "undefined"
-    whichCell(&thisROW, &thisCOL, ROW, COL, cell); // Checks which cell that should be operated.
+    initialize(row, col, cell); // Makes sure the every cell is "undefined"
+    whichCell(&selectedRow, &selectedCol, row, col, cell); // Checks which cell that should be operated.
 
     return 0;
 }
 
-int whichCell(int thisROW, int thisCOL, int ROW, int COL, struct CellProperties (*cell)[COL])
+int whichCell(int selectedRow, int selectedCol, int row, int col, struct CellProperties (*cell)[col])
 {
     printf("Enter cell: ");
-    scanf("%d %d", &thisROW, &thisCOL);
-    if (cell[thisROW][thisCOL].defined == 1) {
-        confirmOverwrite(thisROW, thisCOL, ROW, COL, cell);
+    scanf("%d %d", &selectedRow, &selectedCol);
+
+    if (cell[selectedRow][selectedCol].defined == 1) {
+        confirmOverwrite(selectedRow, selectedCol, row, col, cell);
         return 0;
     }
-    interpreter(thisROW, thisCOL, ROW, COL, cell);
+    interpreter(selectedRow, selectedCol, row, col, cell);
     return 0;   
 }
 
-void confirmOverwrite(int thisROW, int thisCOL, int ROW, int COL, struct CellProperties (*cell)[COL])
+void confirmOverwrite(int selectedRow, int selectedCol, int row, int col, struct CellProperties (*cell)[col])
 {
     char overWrite;
     printf("Cell is defined, overwrite?\nY/n: ");
     scanf("%c", &overWrite);
     if (overWrite == 'y' || overWrite == 'Y')
     {
-        interpreter(thisROW, thisCOL, ROW, COL, cell);
+        interpreter(selectedRow, selectedCol, row, col, cell);
     }
     printf("Cancelled.\n");
 }
-void interpreter(int thisROW, int thisCOL, int ROW, int COL, struct CellProperties (*cell)[COL])
+void interpreter(int selectedRow, int selectedCol, int row, int col, struct CellProperties (*cell)[col])
 {
     printf("Write equation: ");
 
     int c;
     while ((c = getchar()) != '\n' && c != EOF); // Makes fgets work.
 
-        if (fgets(cell[thisROW][thisCOL].equation, sizeof(cell[thisROW][thisCOL].equation), stdin) != NULL)
+        if (fgets(cell[selectedRow][selectedCol].equation, sizeof(cell[selectedRow][selectedCol].equation), stdin) != NULL)
         {
-            if (cell[thisROW][thisCOL].equation[0] == '=') //Determines if the equation should be a name or calculated into a value.
+            if (cell[selectedRow][selectedCol].equation[0] == '=') //Determines if the equation should be a name or calculated into a value.
                 {
-                    lexer(thisROW, thisCOL, ROW, COL, cell);
+                    lexer(selectedRow, selectedCol, row, col, cell);
                 }
                 else
                 {
-                    printf("Cell[%d][%d]: %s\n", thisROW, thisCOL, cell[thisROW][thisCOL].equation);
+                    printf("Cell[%d][%d]: %s\n", selectedRow, selectedCol, cell[selectedRow][selectedCol].equation);
                 }
-                cell[thisROW][thisCOL].defined = 1; // Make sure the cell looks occupied.
+                cell[selectedRow][selectedCol].defined = 1; // Make sure the cell looks occupied.
         }
         else
         {
             printf("Wrong syntax, try again.\n");
-            interpreter(thisROW, thisCOL, ROW, COL, cell);
+            interpreter(selectedRow, selectedCol, row, col, cell);
         }
 }
 
-void lexer(int thisROW, int thisCOL, int ROW, int COL, struct CellProperties (*cell)[COL])
+void lexer(int selectedRow, int selectedCol, int row, int col, struct CellProperties (*cell)[col])
 {
-    int tokens[100] = {0};
-    int token = 0;
+    int tokenNumber = 0;
     int decimalCounter = 0;
-
-    for (int i = 1; i < sizeof(cell[thisROW][thisCOL].equation) - 1; i++) // i = 1 to ignore the '='.
+    int equationLength = strlen(cell[selectedRow][selectedCol].equation);
+    char equation[equationLength];
+    strcpy(equation, cell[selectedRow][selectedCol].equation);
+    struct Token tokens[100] = {0};
+    enum type 
     {
-        if (cell[thisROW][thisCOL].equation[i] == ' ')
+        NUMBER,
+        OPERATOR,
+    };
+
+    for (int i = strlen(equation) - 1; i > 0; i--) // -1 to ignore the '='.
+    {
+        if (equation[i] == ' ')
         {
             decimalCounter = 0;
-            //printf("space was detected\n");
         }
-        else if (cell[thisROW][thisCOL].equation[i] >= '0' && cell[thisROW][thisCOL].equation[i] <= '9')
+        else if (equation[i] >= '0' && equation[i] <= '9')
         {
-            tokens[token] = tokens[token] + (cell[thisROW][thisCOL].equation[i] - 48) * pow(10, decimalCounter); // 48 to transform into decimal.
+            tokens[tokenNumber].value = tokens[tokenNumber].value + (equation[i] - 48) * pow(10, decimalCounter); // 48 to transform into decimal.
+            tokens[tokenNumber].type = NUMBER;
             decimalCounter++;
         }
-        else if (cell[thisROW][thisCOL].equation[i] == '+')
+        else if (equation[i] == '+')
         {
-            token++;
-            tokens[token] = 43;
-            token++;
+            tokenNumber++;
+            tokens[tokenNumber].value = equation[i];
+            tokens[tokenNumber].type = OPERATOR;
+            tokenNumber++;
             decimalCounter = 0;
         }
         else
         {
             decimalCounter = 0;
-            continue;
         }
     }
+
     printf("Tokens:\n");
-    for (int i = 0; i < sizeof(tokens); i++)
+    for (int i = 0; i < 100; i++)
     {
-        printf("%d, ", tokens[i]);
+        printf("%lf, ", tokens[i].value);
     }
 
 }
