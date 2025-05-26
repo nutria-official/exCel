@@ -17,4 +17,8 @@ Many people states that C is a hard and not a beginner friendly programmning lan
 I've been told the same story, but i don't think this is a problem. C is just fair and annoying.
 It might be really annoying actually. You always know it's you fault when your program isen't working, it's always your fault you have a memory leak. Uhh I don't wanna write more. Goodbye.
 
-
+## Withdrawal symptoms hitting - 26-05-2025
+### Program progress
+I forgot to back up my latest version of my program to github, and i dont have acces to the disk with the program untill thursday. I can't make any progress.
+WAIT. NEVERMIND, i can continue on the UI part! I'm saved :D I should proberly make my UI code prettier and more featureful.
+I still don't know know if my program should be CLI, only terminal, or if i should make a GUI...
