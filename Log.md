@@ -1,5 +1,5 @@
-#Logs
-##First day of log - 23-05-2025
+# Logs
+## First day of log - 23-05-2025
 ### Program progress
 This is my first day of logging my progress. It has already been some time since i started this project, and i've only gotten better at C since.
 The goal of this project is to learn different elements of C, and to gain better knowledge about programming. So far, i have made a select screen and the excel ark in the terminal.
